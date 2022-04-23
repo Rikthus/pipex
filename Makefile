@@ -9,7 +9,10 @@ DIR_INCS	:=	includes
 
 DIR_LIBFT	:=	libft_me
 
-LST_SRCS	:=	pipex.c
+LST_SRCS	:=	pipex.c \
+				init_data.c \
+				utils.c
+
 LST_OBJS	:=	$(LST_SRCS:.c=.o)
 LST_INCS	:=	pipex.h
 
@@ -37,7 +40,7 @@ clean	:
 			rm -rf $(DIR_OBJS)
 
 fclean	:	clean
-			rm -rf $(NAME)
+			rm -rf $(NAME) infile outfile
 
 re	:	fclean all
 

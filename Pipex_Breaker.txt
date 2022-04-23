@@ -1,0 +1,104 @@
+Hi, if you're reading this, it means that you've been working on Pipex and wish to know how to test it,
+if not, feel free to share this text file with your struggling mates.
+
+The goal of this text file is simply to give you ideas on how to optimize your program.
+if you've got any suggestions on how I can expand this list, DM me on slack (eavilov) and I'll happily add anything.
+Also, we won't be testing the bonuses, only the mandatory part, sorry about that.
+
+Important note : I might have forgotten to add a few details (or simply chose not to) however,
+these are only HINTS to help you understand the project, it's important to compare any results you get
+with the original shell command.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+For this first series we will assume that you have full permission to Makefile AND outfile (if it's already created).
+Note that if outfile doesn't exist, your function must create it.
+
+./pipex Makefile "cat -e" "cat -e" outfile
+Copies your Makefile's content into outfile having twice the '$' character at the end of each lines.
+
+./pipex /dev/urandom "cat" "head -1" outfile
+Copies some random stuff from urandom into outfile (also cleans the content of outfile beforehand).
+
+./pipex Makefile "sleep 2" "sleep 4" outfile
+Executes both commands at the same time.
+
+./pipex Makefile "/bin/cat -e" "cat" outfile
+Just like the first test, but only having one '$'.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+For the next series, you'll need to type your tests into a bash terminal (if you've been using zsh up to now), 
+but not the normal one, Type "env -i bash".
+This will hide your "PATH=" directories, the goal of those tests is to check whether your program returns an error,
+or crashes/segfaults as you might get graded by very strict people.
+Also note that hardcoding your paths into an array might not please your grader, neither will it please me, as
+the "env" content changes depending on your machine, so it'll be a good idea to just return an error instead
+of trying to outsmart the subject.
+
+./pipex Makefile "cat" "/bin/echo Bonjour" outfile
+Returns an error BUT writes "Bonjour" into outfile
+
+./pipex Makefile "/bin/cat -e" "/bin/cat -e" outfile
+Exactly like the first test.
+
+./pipex Makefile "sleep 2" "sleep 4" outfile
+Return an error.
+
+./pipex pipex.h "/bin/cat" "/usr/bin/grep include" outfile
+Copies the lines where the word "include" is in your pipex.h.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+For the final series, we're exiting this pathless terminal and going back to the normal one.
+Here, you'll need to change your infile and outfile permissions.
+
+With chmod 000 infile
+
+let's say your infile contains "bonsoir"
+
+./pipex infile "cat" "cat -e" outfile
+Returns an error.
+./pipex infile "cat" "echo Bonjour" outfile
+Returns an error BUT writes "Bonjour" into outfile.
+./pipex infile "sleep 4" "echo Bonjour" outfile
+Returns an error BUT writes "Bonjour" into outfile.
+
+=========================================================================================
+
+With chmod 444 infile (only read)
+
+./pipex infile "echo" "cat" outfile
+Writes a newline to outfile.
+./pipex infile "cat" "cat" outfile
+Copies the content of infile into outfile.
+
+=========================================================================================
+
+With chmod 000 outfile
+
+./pipex infile "cat" "sleep 2" outfile
+Returns an error and exits.
+./pipex infile "echo Bonjour" "sleep 2" outfile
+Returns an error and exits.
+./pipex infile "sleep 4" "sleep 2" outfile
+Returns an error BUT executes "sleep 4".
+
+=========================================================================================
+
+With chmod 222 outfile (outfile on Write Only and infile having all permissions)
+
+./pipex infile "cat" "cat" outfile
+Copies the content of infile into outfile (you'll need to figure out how to check if the function worked).
+./pipex infile "cat" "grep Bonjour" outfile
+Returns an error and exits.
+./pipex infile "sleep 2" "echo Bonjour" outfile
+Returns an error BUT executes the sleep command (without writing "Bonjour" on your terminal).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+If you've made it this far, congratulations, your Pipex is very solid, the final and most important part is to check for leaks,
+you can use the leaks command, but not the same way you've been using it on other projects. If you understand how forks work,
+it shouldn't be hard for you to figure out the rest.
+
+Good luck on your grading ! 🐄
