@@ -6,7 +6,7 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:14:38 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/23 02:48:28 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/23 18:43:28 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,22 @@
 static	int	make_pipe(t_data *data)
 {
 	pid_t	pid;
-	int		pipe_a[2];
-	int		pipe_b[2];
+	int		pipeline[2];
+	int		pipe_tmp[2];
 
-	if (pipe(pipe_a) == -1 || pipe(pipe_b) == -1)
-		return (0);
 	while (data->list_cmd)
 	{
+		if (pipe(pipe_tmp) == -1)
+			return (0);
 		pid = fork();
 		if (pid == -1)
 			return (0);
 		if (pid == 0)
 		{
-			
+
 		}
+		data->i_cmd++;
+		data->list_cmd = (data->list_cmd)->next;
 	}
 }
 

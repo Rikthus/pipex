@@ -6,7 +6,7 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:10:37 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/23 17:50:26 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/23 18:50:17 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,14 @@
 typedef	struct	s_cmd
 {
 	char	*cmd;
+	char	*cmd_access;
 	char	**cmd_n_flags;
 	struct	s_cmd	*next;
 }	t_cmd;
 
 typedef	struct s_data
 {
+	int		i_cmd;
 	int		fd_infile;
 	int		fd_outfile;
 	char	**envp;

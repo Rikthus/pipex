@@ -6,7 +6,7 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:45:15 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/23 17:56:28 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/23 19:16:36 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ static	void	basic_init(t_data *data, char **envp)
 	data->fd_outfile = -1;
 	data->path = NULL;
 	data->list_cmd = NULL;
+	data->i_cmd = 1;
 }
 
 static	int	add_elem(t_cmd **list_cmd, char **argv, int i)
@@ -63,6 +64,7 @@ static	int	add_elem(t_cmd **list_cmd, char **argv, int i)
 	elem = malloc(sizeof(*elem));
 	if (!elem)
 		return (0);
+	elem->cmd_access = NULL;
 	elem->cmd_n_flags = ft_split(argv[i], ' ');
 	if (!elem->cmd_n_flags)
 		return (0);

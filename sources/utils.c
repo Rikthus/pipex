@@ -6,11 +6,38 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 22:32:58 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/22 22:55:39 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/23 19:38:47 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
+
+char	*ft_cmd_join(char *s1, char *s2)
+{
+	int		i;
+	int		j;
+	char	*join;
+
+	join = malloc((ft_strlen(s1) + ft_strlen(s2) + 2) * sizeof(*join));
+	if (!join)
+		return (NULL);
+	i = 0;
+	while (s1[i])
+	{
+		join[i] = s1[i];
+		i++;
+	}
+	join[i] = '/';
+	i++;
+	j = 0;
+	while (s2[i])
+	{
+		join[i + j] = s2[j];
+		j++;
+	}
+	join[i + j] = '\0';
+	return (join);
+}
 
 void	free_data(t_data *data)
 {
@@ -23,6 +50,7 @@ void	free_data(t_data *data)
 	{
 		previous = data->list_cmd;
 		free((data->list_cmd)->cmd);
+		free((data->list_cmd)->cmd_access);
 		while((data->list_cmd)->cmd_n_flags[i])
 		{
 			free((data->list_cmd)->cmd_n_flags[i]);
