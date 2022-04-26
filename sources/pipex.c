@@ -6,7 +6,7 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:14:38 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/26 19:59:26 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/26 22:11:47 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 static	void	choose_process(t_data *data, int *pipeline, int *pipe_tmp)
 {
-	if (data->i_cmd == 1)
+	if (data->current_cmd == 1)
 		first_process(data, pipeline, pipe_tmp);
-	else if (data->i_cmd == data->last_cmd)
+	else if (data->current_cmd == data->last_cmd)
 		last_process(data, pipeline, pipe_tmp);
 	else
 		inter_process(data, pipeline, pipe_tmp);
@@ -31,8 +31,7 @@ static	int	make_pipe(t_data *data)
 
 	while (data->list_cmd)
 	{
-		printf("%s\n", (data->list_cmd)->cmd_access);
-		if (data->i_cmd < data->last_cmd)
+		if (data->current_cmd < data->last_cmd)
 		{
 			if (pipe(pipe_tmp) == -1)
 				return (0);
@@ -45,17 +44,17 @@ static	int	make_pipe(t_data *data)
 			choose_process(data, pipeline, pipe_tmp);
 			exit(0);
 		}
-		if (data->i_cmd > 1)
+		if (data->current_cmd > 1)
 		{
 			close(pipeline[0]);
 			close(pipeline[1]);
 		}
 		pipeline[0] = pipe_tmp[0];
 		pipeline[1] = pipe_tmp[1];
-		data->i_cmd++;
+		data->current_cmd++;
 		data->list_cmd = (data->list_cmd)->next;
 	}
-	while ((data->i_cmd)-- > 0)
+	while ((data->current_cmd)-- > 0)
 		wait(NULL);
 	return (1);
 }
@@ -64,14 +63,14 @@ int	main(int argc, char **argv, char **envp)
 {
 	t_data	*data;
 
-	if (argc != 5)
+	if (argc < 5)
 	{
-		write(1, "Usage: ./pipex file1 cmd1 cmd2 file2\n", 37);
+		write(1, "Usage: ./pipex file1 cmd1 ... cmd2 file2\n", 41);
 		return (1);
 	}
 	data = malloc(sizeof(*data));
 	if (!data)
-		exit(0);
+		return (1);
 	if (!init_data(data, argc, argv, envp) || !make_pipe(data))
 	{
 		write(1, "Error\n", 6);

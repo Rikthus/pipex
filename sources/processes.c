@@ -6,37 +6,35 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/23 18:36:04 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/26 20:12:55 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/26 22:12:20 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-void	find_access(t_data *data)
+void	find_access(t_cmd *elem, char **path)
 {
 	int		i;
 	char	*is_path;
 
-	while (data->list_cmd)
+	if (elem->cmd_access)
+		return ;
+	while (elem)
 	{
 		i = 0;
-		if (access((data->list_cmd)->cmd, X_OK))
+		while (path[i])
 		{
-			(data->list_cmd)->cmd_access = (data->list_cmd)->cmd;
-			return ;
-		}
-		while (data->path[i])
-		{
-			is_path = ft_cmd_join(data->path[i], (data->list_cmd)->cmd);
+			is_path = ft_cmd_join(path[i], elem->cmd[0]);
 			if (access(is_path, X_OK))
 			{
-				(data->list_cmd)->cmd_access = is_path;
+				elem->cmd_access = is_path;
 				return ;
 			}
 			i++;
 		}
-		data->list_cmd = (data->list_cmd)->next;
+		elem = elem->next;
 	}
+	printf("%s\n", elem->cmd_access);
 }
 
 void	first_process(t_data *data, int *pipeline, int *pipe_tmp)
@@ -46,7 +44,7 @@ void	first_process(t_data *data, int *pipeline, int *pipe_tmp)
 		exit(1);
 	if (dup2(pipe_tmp[1], STDOUT_FILENO) == -1)
 		exit(1);
-	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd_n_flags,
+	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd,
 			data->envp);
 }
 
@@ -58,7 +56,7 @@ void	last_process(t_data *data, int *pipeline, int *pipe_tmp)
 		exit(1);
 	if (dup2(data->fd_outfile, STDOUT_FILENO) == -1)
 		exit(1);
-	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd_n_flags,
+	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd,
 			data->envp);
 }
 
@@ -68,6 +66,6 @@ void	inter_process(t_data *data, int *pipeline, int *pipe_tmp)
 		exit(1);
 	if (dup2(pipe_tmp[1], STDOUT_FILENO) == -1)
 		exit(1);
-	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd_n_flags,
+	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd,
 			data->envp);
 }

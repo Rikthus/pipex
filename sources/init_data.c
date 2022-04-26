@@ -6,7 +6,7 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:45:15 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/26 20:05:20 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/26 22:06:58 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,17 @@ static	int	find_path(t_data *data, char **envp)
 	char	*full_paths;
 
 	i = 0;
+	full_paths = NULL;
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-		{
-			if (ft_strlen(envp[i]) < 6)
-				return (0);
-			full_paths = envp[i];
-			break ;
-		}
+			full_paths = &(envp[i][5]);
 		i++;
+	}
+	if (!full_paths)
+	{
+		data->path = ft_split("none", ' ');
+		return (1);
 	}
 	data->path = ft_split(full_paths, ':');
 	if (!data->path)
@@ -53,35 +54,29 @@ static	void	basic_init(t_data *data, char **envp, int argc)
 	data->fd_outfile = -1;
 	data->path = NULL;
 	data->list_cmd = NULL;
-	data->i_cmd = 1;
+	data->current_cmd = 1;
 	data->last_cmd = argc - 3;
 }
 
-static	int	add_elem(t_cmd **list_cmd, char **argv, int i)
+static	int	add_elem(t_cmd **list_cmd, char *command, char **path)
 {
 	t_cmd	*elem;
-	t_cmd	*current;
 
 	elem = malloc(sizeof(*elem));
 	if (!elem)
 		return (0);
 	elem->cmd_access = NULL;
-	elem->cmd_n_flags = ft_split(argv[i], ' ');
-	if (!elem->cmd_n_flags)
-		return (0);
-	elem->cmd = ft_strdup(elem->cmd_n_flags[0]);
+	elem->cmd = ft_split(command, ' ');
 	if (!elem->cmd)
 		return (0);
-	elem->next = NULL;
-	if (!*list_cmd)
-		*list_cmd = elem;
-	else
+	if (ft_strchr(elem->cmd[0], '/'))
 	{
-		current = *list_cmd;
-		while (current->next != NULL)
-			current = current->next;
-		current->next = elem;
+		if (!full_path_input(elem))
+			return (0);
 	}
+	elem->next = NULL;
+	adder(list_cmd, elem);
+	find_access(elem, path);
 	return (1);
 }
 
@@ -95,10 +90,9 @@ int	init_data(t_data *data, int argc, char **argv, char **envp)
 		return (0);
 	while (i < (argc - 1))
 	{
-		if (!add_elem(&(data->list_cmd), argv, i))
+		if (!add_elem(&(data->list_cmd), argv[i], data->path))
 			return (0);
 		i++;
 	}
-	find_access(data);
 	return (1);
 }
