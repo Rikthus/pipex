@@ -6,7 +6,7 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:45:15 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/26 22:06:58 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/26 22:18:25 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static	int	open_files(t_data *data, int argc, char **argv)
 {
-	data->fd_infile = open(argv[1], O_CREAT | O_RDONLY | O_TRUNC, 0644);
+	data->fd_infile = open(argv[1], O_RDONLY);
 	if (data->fd_infile == -1)
 		return (0);
 	data->fd_outfile = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);

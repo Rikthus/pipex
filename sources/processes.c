@@ -6,7 +6,7 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/23 18:36:04 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/26 22:12:20 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/26 22:23:21 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	first_process(t_data *data, int *pipeline, int *pipe_tmp)
 		exit(1);
 	if (dup2(pipe_tmp[1], STDOUT_FILENO) == -1)
 		exit(1);
+		close(pipe_tmp[1]);
 	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd,
 			data->envp);
 }
@@ -56,6 +57,7 @@ void	last_process(t_data *data, int *pipeline, int *pipe_tmp)
 		exit(1);
 	if (dup2(data->fd_outfile, STDOUT_FILENO) == -1)
 		exit(1);
+		close(pipeline[0]);
 	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd,
 			data->envp);
 }
@@ -66,6 +68,8 @@ void	inter_process(t_data *data, int *pipeline, int *pipe_tmp)
 		exit(1);
 	if (dup2(pipe_tmp[1], STDOUT_FILENO) == -1)
 		exit(1);
+		close(pipeline[0]);
+		close(pipe_tmp[1]);
 	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd,
 			data->envp);
 }
