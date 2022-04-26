@@ -6,56 +6,68 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/23 18:36:04 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/23 19:37:54 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/26 20:12:55 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/pipex.h"
 
-int	check_access(t_data *data)
+void	find_access(t_data *data)
 {
 	int		i;
 	char	*is_path;
 
-	i = 0;
-	if (ft_strchr((data->list_cmd)->cmd, 47)
-		&& access((data->list_cmd)->cmd, X_OK))
+	while (data->list_cmd)
 	{
-		(data->list_cmd)->cmd_access = (data->list_cmd)->cmd;
-		if (!((data->list_cmd)->cmd_access))
-			return (0);
-		return (1);
-	}
-	while (data->path[i])
-	{
-		is_path = ft_cmd_join(data->path[i], (data->list_cmd)->cmd);
-		if (access(is_path, X_OK))
+		i = 0;
+		if (access((data->list_cmd)->cmd, X_OK))
 		{
-			(data->list_cmd)->cmd_access = is_path;
-			if (!((data->list_cmd)->cmd_access))
-				return (0);
-			return (1);
+			(data->list_cmd)->cmd_access = (data->list_cmd)->cmd;
+			return ;
 		}
-		i++;
+		while (data->path[i])
+		{
+			is_path = ft_cmd_join(data->path[i], (data->list_cmd)->cmd);
+			if (access(is_path, X_OK))
+			{
+				(data->list_cmd)->cmd_access = is_path;
+				return ;
+			}
+			i++;
+		}
+		data->list_cmd = (data->list_cmd)->next;
 	}
-	return (0);
 }
 
-void	first_process(t_data *data, int *pipe_line, int *pipe_tmp)
+void	first_process(t_data *data, int *pipeline, int *pipe_tmp)
 {
-	if(dup2() == -1)
+	(void)pipeline;
+	if (dup2(data->fd_infile, STDIN_FILENO) == -1)
 		exit(1);
-
+	if (dup2(pipe_tmp[1], STDOUT_FILENO) == -1)
+		exit(1);
+	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd_n_flags,
+			data->envp);
 }
+
 
 void	last_process(t_data *data, int *pipeline, int *pipe_tmp)
 {
-	if (dup2() == -1)
+	(void)pipe_tmp;
+	if (dup2(pipeline[0], STDIN_FILENO))
 		exit(1);
+	if (dup2(data->fd_outfile, STDOUT_FILENO) == -1)
+		exit(1);
+	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd_n_flags,
+			data->envp);
 }
 
 void	inter_process(t_data *data, int *pipeline, int *pipe_tmp)
 {
-	if (dup2() == -1)
+	if (dup2(pipeline[0], STDIN_FILENO) == -1)
 		exit(1);
+	if (dup2(pipe_tmp[1], STDOUT_FILENO) == -1)
+		exit(1);
+	execve((data->list_cmd)->cmd_access, (data->list_cmd)->cmd_n_flags,
+			data->envp);
 }

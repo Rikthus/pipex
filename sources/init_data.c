@@ -6,7 +6,7 @@
 /*   By: maxperei <maxperei@student.42lyon.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/22 16:45:15 by maxperei          #+#    #+#             */
-/*   Updated: 2022/04/23 19:16:36 by maxperei         ###   ########lyon.fr   */
+/*   Updated: 2022/04/26 20:05:20 by maxperei         ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static	int	find_path(t_data *data, char **envp)
 	return (1);
 }
 
-static	void	basic_init(t_data *data, char **envp)
+static	void	basic_init(t_data *data, char **envp, int argc)
 {
 	data->envp = envp;
 	data->fd_infile = -1;
@@ -54,6 +54,7 @@ static	void	basic_init(t_data *data, char **envp)
 	data->path = NULL;
 	data->list_cmd = NULL;
 	data->i_cmd = 1;
+	data->last_cmd = argc - 3;
 }
 
 static	int	add_elem(t_cmd **list_cmd, char **argv, int i)
@@ -89,7 +90,7 @@ int	init_data(t_data *data, int argc, char **argv, char **envp)
 	int	i;
 
 	i = 2;
-	basic_init(data, envp);
+	basic_init(data, envp, argc);
 	if (!open_files(data, argc, argv) || !find_path(data, envp))
 		return (0);
 	while (i < (argc - 1))
@@ -98,5 +99,6 @@ int	init_data(t_data *data, int argc, char **argv, char **envp)
 			return (0);
 		i++;
 	}
+	find_access(data);
 	return (1);
 }

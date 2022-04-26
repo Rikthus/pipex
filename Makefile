@@ -11,6 +11,7 @@ DIR_LIBFT	:=	libft_me
 
 LST_SRCS	:=	pipex.c \
 				init_data.c \
+				processes.c \
 				utils.c
 
 LST_OBJS	:=	$(LST_SRCS:.c=.o)
